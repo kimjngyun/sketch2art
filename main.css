@@ -11,6 +11,21 @@
 }
 @media all and (min-width:960px){
     body{
-        background: #6fc0d1;
+        background: orange;
     }
+}
+a {
+    font-weight: bold;
+}
+
+a:link {
+    color: white;
+}
+
+a:visited {
+    color: tomato;
+}
+
+a:hover {
+    color: slateblue;
 }
