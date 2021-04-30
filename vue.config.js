@@ -2,6 +2,6 @@ module.exports = {
   transpileDependencies: [
     'vuetify'
   ],
-  publicPath: '/cat2art',
+  publicPath: '/sketch2art/',
   outputDir: 'docs'
 }
