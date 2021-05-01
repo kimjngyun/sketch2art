@@ -5,9 +5,13 @@
  *   processed: <Image>
  * }
  */
-const state = {
-    images: []
+const getDefaultState = () => {
+    return {
+        images: []
+    }
 }
+
+const state = getDefaultState()
 
 const getters = {
     getImages: state => state.images
@@ -16,6 +20,9 @@ const getters = {
 const mutations = {
     addNewImage (state, newImage) {
         state.images.push(newImage)
+    },
+    resetState (state) {
+        Object.assign(state, getDefaultState())
     }
 }
 
@@ -26,6 +33,9 @@ const actions = {
             style: 0,
             processed: null
         })
+    },
+    resetImage({ commit }) {
+        commit('resetState')
     }
 }
 

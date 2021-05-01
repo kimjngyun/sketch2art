@@ -1,5 +1,5 @@
 <template>
-    <body onload="init()">
+    <v-layout class="univSketch">
         <div id="sketchpadapp">
             <div class="rightside">
                 <canvas id="sketchpad" height="512" width="512">
@@ -10,12 +10,13 @@
                 <v-btn @click="capture">submit</v-btn>
             </div>
         </div>
-    </body>
+    </v-layout>
 </template>
 
 <script>
 import axios from 'axios'
 import { mapActions } from 'vuex'
+// import { mapMutations } from 'vuex'
 export default {
     name: 'mobileSketch',
     data: () => ({
@@ -35,6 +36,7 @@ export default {
     }),
     methods: {
         ...mapActions(['addNewImage']),
+        ...mapActions(['resetImage']),
         newFile () {
             const files = this.$el.querySelector('.fileInput').files
             const newFile = files[files.length - 1]
@@ -47,6 +49,7 @@ export default {
         },
 
         capture () {
+            this.resetImage()
             const canvas = this.$el.querySelector("canvas")
             const newImage = canvas.toDataURL("image/jpeg");
 
@@ -73,6 +76,7 @@ export default {
             console.log('Uploaded and Captured')
         },
         eraseCanvas () {
+            this.resetImage()
             this.shapes = []
             this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height)
             this.ctx.fillStyle = "white"
