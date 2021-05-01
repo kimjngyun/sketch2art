@@ -10,6 +10,7 @@
 
 <script>
 import { mapActions } from 'vuex'
+import axios from 'axios'
 export default {
     name: 'CanvasWrapper',
     data: () => ({
@@ -25,7 +26,8 @@ export default {
         shapes: [],
         currentShape: [],
         intervalLastPosition: [-1, -1],
-        reader: new FileReader()
+        reader: new FileReader(),
+        stroke: 2
     }),
     methods: {
         ...mapActions(['addNewImage']),
@@ -45,8 +47,28 @@ export default {
             const newImage = canvas.toDataURL("image/jpeg");
 
             this.addNewImage(newImage)
-            console.log('Captured')
+
+            const imgBase64 = canvas.toDataURL('image/jpeg', 'image/octet-stream');
+            const decodImg = atob(imgBase64.split(',')[1]);         
+            let array = [];
+
+            for (let i = 0; i < decodImg .length; i++) {
+                array.push(decodImg .charCodeAt(i));
+            }
+
+            const file = new Blob([new Uint8Array(array)], {type: 'image/jpeg'});
+            const fileName = 'canvas_img_' + new Date().getMilliseconds() + '.jpg';
+            let formData = new FormData();
+            formData.append('file', file, fileName);
+            
+            const baseURL = this.$store.getters.urlOf('styleTransferServer')
+            const apiURL = `${baseURL}/fileUpload`
+            axios.post(apiURL, formData, {
+                responseType: 'arraybuffer'
+            })
+            console.log('Uploaded and Captured')
         },
+
         eraseCanvas () {
             this.shapes = []
             this.context.clearRect(0, 0, this.canvas.width, this.canvas.height)
@@ -54,6 +76,7 @@ export default {
             this.context.fillRect(0, 0, 512, 512)
             console.log('erase the canvas')
         },
+
         prepareNewShape () {
             this.currentShape = [
                 [],
@@ -72,12 +95,6 @@ export default {
         },
         commitCurrentShape () {
             this.shapes.push(this.currentShape)
-            /*
-            const drawOptions = {
-                canvasWidth: this.canvas.width,
-                canvasHeight: this.canvas.height
-            }
-            */
         },
         draw (mouseEvent) {
             let timeInterval
@@ -114,14 +131,14 @@ export default {
             if (highlightStartPoint) {
                 this.context.beginPath()
                 this.context.fillStyle = drawColorStartingPoint
-                this.context.fillRect(this.currentX, this.currentY, 2, 2)
+                this.context.fillRect(this.currentX, this.currentY, this.stroke, this.stroke)
                 this.context.closePath()
                 highlightStartPoint = false
             }
             return window.setInterval(() => this.storeCoordinates(), 9)
         },
         drawMouseMove (mouseEvent) {
-            const drawStroke = 10
+            const drawStroke = this.stroke
             const drawColor = 'black'
             // TODO: make a config and use it.
             this.updateXY(mouseEvent)

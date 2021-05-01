@@ -14,6 +14,7 @@
 </template>
 
 <script>
+import axios from 'axios'
 import { mapActions } from 'vuex'
 export default {
     name: 'mobileSketch',
@@ -30,6 +31,7 @@ export default {
         touchX: 0,
         touchY: 0,
         shapes: [],
+        stroke: 2
     }),
     methods: {
         ...mapActions(['addNewImage']),
@@ -49,7 +51,26 @@ export default {
             const newImage = canvas.toDataURL("image/jpeg");
 
             this.addNewImage(newImage)
-            console.log('Captured')
+
+            const imgBase64 = canvas.toDataURL('image/jpeg', 'image/octet-stream');
+            const decodImg = atob(imgBase64.split(',')[1]);         
+            let array = [];
+
+            for (let i = 0; i < decodImg .length; i++) {
+                array.push(decodImg .charCodeAt(i));
+            }
+
+            const file = new Blob([new Uint8Array(array)], {type: 'image/jpeg'});
+            const fileName = 'canvas_img_' + new Date().getMilliseconds() + '.jpg';
+            let formData = new FormData();
+            formData.append('file', file, fileName);
+            
+            const baseURL = this.$store.getters.urlOf('styleTransferServer')
+            const apiURL = `${baseURL}/fileUpload`
+            axios.post(apiURL, formData, {
+                responseType: 'arraybuffer'
+            })
+            console.log('Uploaded and Captured')
         },
         eraseCanvas () {
             this.shapes = []
@@ -80,7 +101,7 @@ export default {
         // Keep track of the mouse button being pressed and draw a dot at current location
         sketchpad_mouseDown() {
             this.mouseDown=1;
-            this.drawDot(this.ctx,this.mouseX,this.mouseY,4);
+            this.drawDot(this.ctx,this.mouseX,this.mouseY,this.stroke);
         },
 
         // Keep track of the mouse button being released
@@ -95,7 +116,7 @@ export default {
 
             // Draw a dot if the mouse button is currently being pressed
             if (this.mouseDown==1) {
-                this.drawDot(this.ctx,this.mouseX,this.mouseY,4);
+                this.drawDot(this.ctx,this.mouseX,this.mouseY,this.stroke);
             }
         },
 
@@ -119,7 +140,7 @@ export default {
             // Update the touch co-ordinates
             this.getTouchPos();
 
-            this.drawDot(this.ctx,this.touchX,this.touchY, 4);
+            this.drawDot(this.ctx,this.touchX,this.touchY, this.stroke);
 
             // Prevents an additional mousedown event being triggered
             event.preventDefault();
@@ -131,7 +152,7 @@ export default {
             this.getTouchPos(e);
 
             // During a touchmove event, unlike a mousemove event, we don't need to check if the touch is engaged, since there will always be contact with the screen by definition.
-            this.drawDot(this.ctx,this.touchX,this.touchY, 4); 
+            this.drawDot(this.ctx,this.touchX,this.touchY, this.stroke); 
 
             // Prevent a scrolling action as a result of this touchmove triggering.
             event.preventDefault();
