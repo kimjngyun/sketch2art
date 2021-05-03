@@ -7,14 +7,18 @@
  */
 const getDefaultState = () => {
     return {
-        images: []
+        images: [],
+        processed: false,
+        submitted: false
     }
 }
 
 const state = getDefaultState()
 
 const getters = {
-    getImages: state => state.images
+    getImages: state => state.images,
+    getProcessed: state => state.processed,
+    getSubmitted: state => state.submitted
 }
 
 const mutations = {
@@ -31,7 +35,8 @@ const actions = {
         commit('addNewImage', {
             original: newImage,
             style: 0,
-            processed: null
+            processed: true,
+            submitted: true
         })
     },
     resetImage({ commit }) {

@@ -1,15 +1,19 @@
 <template>
     <v-layout class="univSketch">
-        <div id="sketchpadapp">
-            <div class="rightside">
-                <canvas id="sketchpad" height="512" width="512">
-                </canvas>
-            </div>
-            <div class="btns">
-                <v-btn @click="eraseCanvas">clear</v-btn>
-                <v-btn @click="capture">submit</v-btn>
-            </div>
-        </div>
+        <v-card elevation="0">
+            <canvas id="sketchpad" height="512" width="512">
+            </canvas>
+            <v-card-text>
+                If you submit, we considered as you agree that
+                <br>
+                the sketch image can be used as a dataset.
+            </v-card-text>
+            
+            <v-card-actions>
+                <v-btn text color="black" outlined elevation="0" @click="eraseCanvas">clear</v-btn>
+                <v-btn text color="black" outlined elevation="0" @click="capture">submit</v-btn>
+            </v-card-actions>
+        </v-card>
     </v-layout>
 </template>
 
@@ -34,6 +38,9 @@ export default {
         shapes: [],
         stroke: 2
     }),
+    prop: {
+        image: Object
+    },
     methods: {
         ...mapActions(['addNewImage']),
         ...mapActions(['resetImage']),
@@ -55,6 +62,8 @@ export default {
 
             this.addNewImage(newImage)
 
+
+            // 서버 저장 하는 부분
             const imgBase64 = canvas.toDataURL('image/jpeg', 'image/octet-stream');
             const decodImg = atob(imgBase64.split(',')[1]);         
             let array = [];
@@ -73,7 +82,9 @@ export default {
             axios.post(apiURL, formData, {
                 responseType: 'arraybuffer'
             })
-            console.log('Uploaded and Captured')
+            console.log('Captured')
+
+            this.image.submitted = true
         },
         eraseCanvas () {
             this.resetImage()
@@ -218,24 +229,11 @@ export default {
     -ms-user-select: none;
     user-select: none;
 }
-
-.rightside {
-    float:left;
-    margin-left:20px;
-}
 #sketchpad {
-    float:left;
-    height:512pxs;
-    width:512px;
-    border:2px solid #888;
-    border-radius:4px;
-    position:relative; /* Necessary for correct mouse co-ords in Firefox */
-}
-#clearbutton {
-    font-size: 15px;
-    padding: 10px;
-    -webkit-appearance: none;
-    background: #eee;
-    border: 1px solid #888;
+    height: 512px;
+    width: 512px;
+    border: 2px solid black;
+    border-radius: 10px;
+    position: relative; /* Necessary for correct mouse co-ords in Firefox */
 }
 </style>

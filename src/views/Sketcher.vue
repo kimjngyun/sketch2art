@@ -1,12 +1,19 @@
 <template>
   <v-layout id="Sketcher">
-    <mobileSketch/>
+    <mobileSketch
+      class="mx-auto my-4"
+    />
     <ImageCard
-        class="mx-auto my-4"
-        v-for="(img, idx) in getImages"
-        :key="idx"
-        :image=img
-      />
+      class="mx-auto my-4"
+      v-for="(img, idx) in getImages"
+      :key="idx"
+      :image=img
+    />
+    <!-- <ImageCard
+      class="mx-auto my-4"
+      v-if="!this.image.submitted"
+      image="../assets/1.jpg"
+    /> -->
   </v-layout>
 </template>
 
@@ -15,6 +22,7 @@ import { mapGetters } from 'vuex'
 // import Sketch from '../components/sketch.vue'
 import mobileSketch from '../components/mobileSketch'
 import ImageCard from '../components/ImageCard'
+
 export default {
   name: 'Sketcher',
   components: {
@@ -26,7 +34,7 @@ export default {
 
   }),
   computed: {
-    ...mapGetters(['getImages'])
+    ...mapGetters(['getImages', 'getProcessed'])
   }
 }
 </script>

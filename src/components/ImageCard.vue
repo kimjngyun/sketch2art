@@ -1,9 +1,10 @@
 <template>
-  <v-card>
-      <img v-if="!isProcessed" :src="image.original" />
-      <img v-else :src="image.processed" />
+  <v-card elevation="0">
+      <!-- <img v-if="!isProcessed" :src="image.original" /> -->
+      <img id="image" v-if="!isProcessed" src="../assets/1.jpg" />
+      <img id="image" v-else :src="image.processed" />
 
-      <v-card-subtitle
+      <!-- <v-card-subtitle
         v-if="!isProcessed"
         class="pb-0"
       >
@@ -15,23 +16,21 @@
         class="pb-0"
       >
       Styled Image with Style <b> "{{ styleNames[style] }}" </b>
-      </v-card-subtitle>
-
-      <v-card-text class="text--primary mb-8">
-        <div>스타일 번호를 선택하세요.</div>
-        <v-slider
-          v-model="style"
-          :tick-labels="styles"
-          :min="-1"
-          :max="10"
-          step="1"
-          ticks="always"
-          label="Style Number"
-          hide-details="true"
-          solo
-        >
-        </v-slider>
+      </v-card-subtitle> -->
+      <v-card-text v-if="!isProcessed">
+        Draw and Submit
+        <br/>
+        Press Change
       </v-card-text>
+      <v-card-text v-else>
+        Translated Sketch!
+        <br/>
+        If you don't like, press change button!
+      </v-card-text>
+      <v-card-actions>
+        <v-btn text color="black" outlined elevation="0" @click="stylize"> Change </v-btn>
+        <v-btn text color="black" outlined elevation="0" @click="submit"> Submit </v-btn>
+      </v-card-actions>
     </v-card>
 </template>
 
@@ -47,9 +46,9 @@ export default {
 
   data: () => ({
     isProcessed: false,
-    style: -1,
+    style: 10,
     styles: ['original', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10'],
-    styleNames: ['candy', 'composition_7', 'feathers', 'la_muse', 'mosaic', 'rain', 'starry_night', 'the_scream', 'the_wave', 'udnie'] // TODO: RENAME
+    styleNames: ['candy', 'composition_7', 'feathers', 'la_muse', 'mosaic', 'rain', 'starry_night', 'the_scream', 'the_wave', 'udnie', 'random'] // TODO: RENAME
   }),
 
   methods: {
@@ -66,13 +65,16 @@ export default {
 
       return new File([u8arr], fileName, {type: mime})
     },
+    submit () {
 
+    },
     async stylize () {
       if (this.style === -1) {
         this.isProcessed = false
         return
       }
-
+      
+      // this.style = 10
       // TODO: class에 loading 넣기 
       const formData = new FormData()
 
@@ -107,6 +109,12 @@ export default {
 <style scoped>
 .v-input {
   font-size: 10px;
+}
+#image {
+  height: 512px;
+  width: 512px;
+  border: 2px solid black;
+  border-radius: 10px;
 }
 
 </style>
