@@ -1,54 +1,36 @@
 <template>
-  <v-card elevation="0">
-      <!-- <img v-if="!isProcessed" :src="image.original" /> -->
-      <img id="image" v-if="!isProcessed" src="../assets/1.jpg" />
-      <img id="image" v-else :src="image.processed" />
-
-      <!-- <v-card-subtitle
-        v-if="!isProcessed"
-        class="pb-0"
-      >
-        Original Image
-      </v-card-subtitle>
-
-      <v-card-subtitle
-        v-else
-        class="pb-0"
-      >
-      Styled Image with Style <b> "{{ styleNames[style] }}" </b>
-      </v-card-subtitle> -->
-      <v-card-text v-if="!isProcessed">
-        Draw and Submit
-        <br/>
-        Press Change
-      </v-card-text>
-      <v-card-text v-else>
-        Translated Sketch!
-        <br/>
-        If you don't like, press change button!
-      </v-card-text>
-      <v-card-actions>
-        <v-btn text color="black" outlined elevation="0" @click="stylize"> Change </v-btn>
-        <v-btn text color="black" outlined elevation="0" @click="submit"> Submit </v-btn>
-      </v-card-actions>
-    </v-card>
+  <div id="wrap">
+  
+    <div v-if="isProcessed===false"><img id="null" src="../assets/1.jpg" /></div>
+    <div v-else class="inf">
+      <img id="i0" :src="temp0" />
+      <img id="i1" :src="temp1" />
+      <img id="i2" :src="temp2" />
+      <img id="i3" :src="temp3" />
+    </div>
+    <br/>
+  <div>
+    <v-btn v-on:click="change" text color="black" outlined elevation="0">변경</v-btn>
+  </div>
+    
+  </div>
 </template>
 
 <script>
 import axios from 'axios'
-
+import { mapGetters } from 'vuex'
 export default {
   name: 'ImageCard',
-
   props: {
-    image: Object
+    image: mapGetters('getImages')
   },
-
   data: () => ({
     isProcessed: false,
-    style: 10,
-    styles: ['original', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10'],
-    styleNames: ['candy', 'composition_7', 'feathers', 'la_muse', 'mosaic', 'rain', 'starry_night', 'the_scream', 'the_wave', 'udnie', 'random'] // TODO: RENAME
+    // style: 10,
+    temp0: null,
+    temp1: null,
+    temp2: null,
+    temp3: null
   }),
 
   methods: {
@@ -69,52 +51,79 @@ export default {
 
     },
     async stylize () {
-      if (this.style === -1) {
-        this.isProcessed = false
-        return
-      }
-      
-      // this.style = 10
-      // TODO: class에 loading 넣기 
       const formData = new FormData()
-
-      formData.append('style', this.style)
-      formData.append('contentImage', this.dataURLtoFile(this.image.original, `styled_${this.style}`))
+      formData.append('contentImage', this.dataURLtoFile(this.image.original))
 
       const baseURL = this.$store.getters.urlOf('styleTransferServer')
       const apiURL = `${baseURL}/api/stylize`
 
-      const response = await axios.post(apiURL, formData, {
-        responseType: 'arraybuffer'
-      })
-      const styledImageURL =
-        'data:' +
-        response.headers['content-type'] +
-        ';base64,' +
-        Buffer.from(response.data, 'binary').toString('base64') 
-
-      this.image.processed = styledImageURL
+      for (var i=0; i<4; i++){
+        const response = await axios.post(apiURL, formData, {
+          responseType: 'arraybuffer'
+        })
+        const styledImageURL =
+          'data:' +
+          response.headers['content-type'] +
+          ';base64,' +
+          Buffer.from(response.data, 'binary').toString('base64') 
+        switch (i){
+          case 0:
+            this.temp0 = styledImageURL
+            break
+          case 1:
+            this.temp1 = styledImageURL
+            break
+          case 2:
+            this.temp2 = styledImageURL
+            break
+          case 3:
+            this.temp3 = styledImageURL
+            break
+        }
+      }
       this.isProcessed = true
     }
   },
 
   watch: {
-    style () {
+    image: function () {
       this.stylize()
+    },
+    check_image (img) { 
+      this.image = img 
     }
+  },
+  mounted () {
+    this.stylize()
+  },
+  computed: {
+    check_image () { return this.$store.getters.getImages[0] }
   }
 }
 </script>
 
 <style scoped>
-.v-input {
-  font-size: 10px;
-}
-#image {
-  height: 512px;
+#wrapIC {
+  display: flex;
   width: 512px;
-  border: 2px solid black;
-  border-radius: 10px;
 }
+#null {
+  width: 512px;
+  height: 512px;
 
+}
+img {
+  width: 256px;
+  height: 256px;
+}
+.inf {
+  display: felx;
+  flex-flow:column nowrap;
+  width: 512px;
+  margin: 0;
+  line-height: 0;
+}
+.inf img{
+  flex: 2 2 0;
+}
 </style>

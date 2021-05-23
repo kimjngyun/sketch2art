@@ -1,7 +1,7 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 import Home from '../views/Home.vue'
-import Sketcher from '../views/Sketcher.vue'
+import Sketcher from '../views/SketchBook.vue'
 import Gallery from '../views/Gallery.vue'
 
 Vue.use(VueRouter)
@@ -13,8 +13,8 @@ const routes = [
         component: Home
     },
     {
-        path: '/sketcher',
-        name: 'Sketcher',
+        path: '/sketchbook',
+        name: 'SketchBook',
         component: Sketcher
     },
     {

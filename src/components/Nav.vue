@@ -8,7 +8,7 @@
             </v-toolbar-title>
             <v-spacer></v-spacer>
             <v-btn text color="black" @click="sketcher" elevation="0">
-                <span>Sketcher</span>
+                <span>Sketchbook</span>
             </v-btn>
             <v-btn text color="black" @click="gallery" elevation="0">
                 <span>Gallery</span>
@@ -27,7 +27,7 @@ export default {
     },
     methods: {
         index () { this.$router.push('/') },
-        sketcher () { this.$router.push('/sketcher') },
+        sketcher () { this.$router.push('/sketchbook') },
         gallery () { this.$router.push('/gallery') }
     },
     data () {
